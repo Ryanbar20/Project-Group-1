@@ -157,3 +157,49 @@ def rounding(imputed_data_x, miss_data_x):
             rounded_data_x[:, i] = np.round(rounded_data_x[:, i])
 
     return rounded_data_x
+
+
+def mar_sampler(p, no, dim, x, seed=None):
+    """Sample MAR distributed random variables
+        pm(i) = avg missing rate of ith feature
+        N = #rows
+        n = current row
+        wj,bj are sampled from U(0,1) once per dataset
+        m1,...,md = missingness mask
+        xjn = value of jth feature of the nth sample
+    """
+    if seed: np.random.seed(seed)
+
+    #The matrix of the w and b values for every j, the first value is w and second is b
+    wb_matrix = np.random.uniform(0.,1.,size=(2,dim)) 
+
+    #init mask array
+    mask = np.random.uniform(0., 1., size=(no,dim ))
+
+    #set average missing rate of i-th feature equal for all the features
+    pmi = p / dim
+    
+    for i in range(dim):
+        print(f"i = {i},DIM = {dim}, NO = {no}")
+        divisor = 0
+        for l in range(no):
+            temp = 0
+            for j in range(i):
+                temp += wb_matrix[0][j] * mask[l][j] * x[l][j] + wb_matrix[1][j]*(1-mask[l][j])
+            divisor += np.exp(-temp)
+
+       
+        for n in range(no):
+            exponent = 0
+            for j in range(i):
+                exponent += wb_matrix[0][j] * mask[n][j] * x[n][j] + wb_matrix[1][j]*(1-mask[n][j])
+            result = pmi * no * np.exp(-exponent) / divisor
+            mask[n][i] = 1 * (mask[n][i] < result)
+    
+    return mask
+
+def mnar_sampler():
+    """Sample MNAR distributed random variables
+
+    """
+    pass

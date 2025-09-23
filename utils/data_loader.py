@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from utils.utils import binary_sampler
+from utils.utils import binary_sampler, mar_sampler, mnar_sampler
 from keras.datasets import mnist, fashion_mnist, cifar10
 
 
@@ -42,10 +42,17 @@ def data_loader(dataset, miss_rate, miss_modality='MCAR', seed=None):
         print(f'Invalid dataset "{dataset}". Exiting the program.')
         return None
 
-    # Introduce missing elements in the data
+    # Introduce missing elements in the data'
     no, dim = data_x.shape
-    data_mask = binary_sampler(1 - miss_rate, no, dim, seed)
+    match miss_modality:
+        case 'MCAR':
+            data_mask = binary_sampler(1 - miss_rate, no, dim, seed)
+        case 'MAR':
+            print("MARRING RN")
+            data_mask = mar_sampler(1 - miss_rate, no, dim, data_x, seed)
+            
+        case 'MNAR':
+            data_mask = mnar_sampler()#TODO implement the mnar sampler
     miss_data_x = data_x.copy()
     miss_data_x[data_mask == 0] = np.nan
-
     return data_x, miss_data_x, data_mask
