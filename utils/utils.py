@@ -177,7 +177,6 @@ def mar_sampler(p, no, dim, x, seed=None):
     mask = np.random.uniform(0., 1., size=(no,dim ))
 
     #set average missing rate of i-th feature equal for all the features
-    pmi = p / dim
     
     for i in range(dim):
         print(f"i = {i},DIM = {dim}, NO = {no}")
@@ -193,9 +192,9 @@ def mar_sampler(p, no, dim, x, seed=None):
             exponent = 0
             for j in range(i):
                 exponent += wb_matrix[0][j] * mask[n][j] * x[n][j] + wb_matrix[1][j]*(1-mask[n][j])
-            result = pmi * no * np.exp(-exponent) / divisor
+            result = p * no * np.exp(-exponent) / divisor
             mask[n][i] = 1 * (mask[n][i] < result)
-    
+    mask = 1 - mask
     return mask
 
 def mnar_sampler():

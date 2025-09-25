@@ -48,7 +48,7 @@ def data_loader(dataset, miss_rate, miss_modality='MCAR', seed=None):
         case 'MCAR':
             data_mask = binary_sampler(1 - miss_rate, no, dim, seed)
         case 'MAR':
-            data_mask = mar_sampler(1 - miss_rate, no, dim, data_x, seed)
+            data_mask = mar_sampler(miss_rate, no, dim, data_x, seed)
             
         case 'MNAR':
             data_mask = mnar_sampler()#TODO implement the mnar sampler
