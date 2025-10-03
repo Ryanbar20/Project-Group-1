@@ -20,6 +20,7 @@
 (3) normalization: normalize the data in [0, 1] range
 (4) renormalization: re-normalize data from [0, 1] range to the original range
 (5) rounding: round the imputed data for categorical variables
+(6) mar_sampler: sample mar-based random variables
 """
 
 import numpy as np
@@ -161,12 +162,19 @@ def rounding(imputed_data_x, miss_data_x):
 
 def mar_sampler(p, no, dim, x, seed=None):
     """Sample MAR distributed random variables
-        pm(i) = avg missing rate of ith feature
-        N = #rows
-        n = current row
-        wj,bj are sampled from U(0,1) once per dataset
-        m1,...,md = missingness mask
-        xjn = value of jth feature of the nth sample
+
+        This method generates a mask of binary values for the missing data. 
+        This is done according to the formula from the paper from Yoon et al.
+        The Missing data is dependent on occurences of previous data points.
+
+        
+        :param p    : average probability of a datapoint missing 
+        :param no   : amount of records
+        :param dim  : amount of attributes
+        :param x    : the original dataset
+        :param seed : None is the base value, set this to make the random sampling deterministic
+
+        :return     : mask on the data showing the missings values (0) and the observed ones (1)
     """
     if seed: np.random.seed(seed)
 
