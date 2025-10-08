@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from utils.utils import binary_sampler, mar_sampler, mnar_sampler
+from utils.utils import binary_sampler, mar_sampler, gain_mnar_sampler
 from keras.datasets import mnist, fashion_mnist, cifar10
 
 
@@ -50,8 +50,8 @@ def data_loader(dataset, miss_rate, miss_modality='MCAR', seed=None):
         case 'MAR':
             data_mask = mar_sampler(miss_rate, no, dim, data_x, seed)
             
-        case 'MNAR':
-            data_mask = mnar_sampler()#TODO implement the mnar sampler
+        case 'GAIN_MNAR':
+            data_mask = gain_mnar_sampler(miss_rate,no,dim,data_x,seed)
     miss_data_x = data_x.copy()
     miss_data_x[data_mask == 0] = np.nan
     return data_x, miss_data_x, data_mask

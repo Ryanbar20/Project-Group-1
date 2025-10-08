@@ -205,8 +205,30 @@ def mar_sampler(p, no, dim, x, seed=None):
     mask = 1 - mask
     return mask
 
-def mnar_sampler():
-    """Sample MNAR distributed random variables
+def gain_mnar_sampler(p, no, dim, x, seed=None):
+    """ Sample MNAR distributed random variables
 
+    p = probability
+    N = number of examples
+    w = weights sampled U(0,1)
+    x = datapoints
     """
-    pass
+
+    if seed: np.random.seed(seed)
+
+    #The matrix of the w and b values for every j, the first value is w and second is b
+    w_array = np.random.uniform(0.,1.,size=(dim,)) 
+
+    #init mask array
+    mask = np.random.uniform(0., 1., size=(no,dim ))
+
+    denominators = np.zeros(dim)
+    for i in range(dim):
+        for j in range(no):
+            denominators[i] += np.exp(-w_array[i] * x[j][i])
+    
+    for i in range(dim):
+        for j in range(no):
+            nominator = p * no * np.exp(-w_array[i] * x[j][i])
+            mask[j][i] = 1 * (mask[j][i] < (nominator/denominators[i]))
+    return 1 - mask
