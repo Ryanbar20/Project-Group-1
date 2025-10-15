@@ -42,6 +42,8 @@ def data_loader(dataset, miss_rate, miss_modality='MCAR', seed=None):
         print(f'Invalid dataset "{dataset}". Exiting the program.')
         return None
 
+    #TODO normalize data
+
     # Introduce missing elements in the data'
     no, dim = data_x.shape
     match miss_modality:
