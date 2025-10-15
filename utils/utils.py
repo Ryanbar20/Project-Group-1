@@ -180,29 +180,25 @@ def mar_sampler(p, no, dim, x, seed=None):
 
     #The matrix of the w and b values for every j, the first value is w and second is b
     wb_matrix = np.random.uniform(0.,1.,size=(2,dim)) 
-
+    if seed: np.random.seed(seed)
     #init mask array
     mask = np.random.uniform(0., 1., size=(no,dim ))
 
     #set average missing rate of i-th feature equal for all the features
     
     for i in range(dim):
-        print(f"i = {i},DIM = {dim}, NO = {no}")
-        divisor = 0
-        for l in range(no):
-            temp = 0
-            for j in range(i):
-                temp += wb_matrix[0][j] * mask[l][j] * x[l][j] + wb_matrix[1][j]*(1-mask[l][j])
-            divisor += np.exp(-temp)
+        vectors = []
 
-       
+        for l in range(no):
+            vec = wb_matrix[0] * mask[l] * x[l] + wb_matrix[1]*(1-mask[l])
+            vectors.append(np.sum(vec[0:i]))
+        vectors = np.array(vectors)
         for n in range(no):
-            exponent = 0
-            for j in range(i):
-                exponent += wb_matrix[0][j] * mask[n][j] * x[n][j] + wb_matrix[1][j]*(1-mask[n][j])
-            result = p * no * np.exp(-exponent) / divisor
+            divisor = np.sum(np.exp(-vectors))
+            result = p * no * np.exp(-vectors[n]) / divisor
             mask[n][i] = 1 * (mask[n][i] < result)
     mask = 1 - mask
+    print(mask[:5])
     return mask
 
 def gain_mnar_sampler(p, no, dim, x, seed=None):
