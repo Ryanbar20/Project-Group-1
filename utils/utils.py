@@ -236,3 +236,33 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
         for j in range(no):
             mask[j][i] = 1 * (mask[j][i] < (numerators[i][j]/denominators[i]))
     return 1 - mask
+
+
+
+def upscale(np_image, multiplier):
+    """ Upscale input image
+    This method converts an image to a np-array with missing values,
+    after which S-GAIN fills them in with imputed data.
+
+    :param np_image             : the image that needs to be upscaled
+    :param multiplier           : the factor by which the image needs to be upscaled
+    
+    """
+    print(np_image.shape)
+    
+    
+    rows, cols = np_image.shape[:2]
+    new_rows_step = int(rows /  (rows * (multiplier-1)))
+    new_cols_step = int(cols /  (cols * (multiplier-1)))
+    row_indices = np.arange(0, rows, new_rows_step)
+    col_indices = np.arange(0, cols, new_cols_step)
+    #insert nan rows
+    np_image = np.insert(np_image, row_indices, [np.nan, np.nan, np.nan], axis=0)
+    np_image = np.insert(np_image, col_indices, [np.nan, np.nan, np.nan], axis=1)
+    
+    
+    mask = (~np.isnan(np_image)).astype(int)
+    return np_image, mask
+    
+    
+

@@ -16,7 +16,7 @@
 
 import argparse
 import os
-
+from PIL import Image
 import numpy as np
 
 from models.s_gain_TFv1_FP32 import s_gain
@@ -36,6 +36,7 @@ def main(args):
     :param args:
     - dataset: the dataset to use
     - miss_rate: the probability of missing elements in the data
+    - upscale_multiplier: the multiplier for the image size for upscaling
     - miss_modality: the modality of missing data (MCAR, MAR, MNAR)
     - seed: the seed used to introduce missing elements in the data (optional)
     - batch_size: the number of samples in mini-batch
@@ -62,6 +63,7 @@ def main(args):
     # Get the parameters
     dataset = args.dataset.lower()
     miss_rate = args.miss_rate
+    upscale_multiplier = args.upscale_multiplier
     miss_modality = args.miss_modality.upper()
     seed = args.seed
     batch_size = args.batch_size
@@ -125,7 +127,7 @@ def main(args):
         print('Loading data...')
 
     # Load the data with missing elements
-    data_x, miss_data_x, data_mask = data_loader(dataset, miss_rate, miss_modality, seed)
+    data_x, miss_data_x, data_mask = data_loader(dataset, miss_rate, miss_modality, upscale_multiplier, seed)
 
     # Initialize monitor
     monitor = None if no_log and no_model else Monitor(data_x, data_mask, experiment=experiment, verbose=verbose)
@@ -135,7 +137,7 @@ def main(args):
         miss_data_x, batch_size=batch_size, hint_rate=hint_rate, alpha=alpha, iterations=iterations,
         generator_sparsity=generator_sparsity, generator_modality=generator_modality,
         discriminator_sparsity=discriminator_sparsity, discriminator_modality=discriminator_modality,
-        verbose=verbose, no_model=no_model, monitor=monitor
+        verbose=verbose, no_model=no_model, monitor=None
     )
 
     # Calculate the RMSE
@@ -172,8 +174,11 @@ def main(args):
     )
 
     if verbose: print(f'Finished.')
+    # print(imputed_data_x[:5])
+    # result = Image.fromarray((imputed_data_x * 255).astype(int))
+    # result.show()
 
-    return imputed_data_x, rmse
+    return imputed_data_x #, rmse
 
 
 if __name__ == '__main__':
@@ -182,7 +187,7 @@ if __name__ == '__main__':
     parser.add_argument(
         'dataset',
         help='which dataset to use',
-        choices=['health', 'letter', 'spam', 'mnist', 'fashion_mnist', 'cifar10'],
+        choices=['health', 'letter', 'spam', 'mnist', 'fashion_mnist', 'cifar10', 'test'],
         type=str)
     parser.add_argument(
         '-mr', '--miss_rate',
@@ -190,9 +195,15 @@ if __name__ == '__main__':
         default=0.2,
         type=float)
     parser.add_argument(
+        '-um', '--upscale_multiplier',
+        help= 'the multiplier for the upscaling size',
+        default= 1.1, 
+        type=float
+    )
+    parser.add_argument(
         '-mm', '--miss_modality',
-        help='the modality of missing data (MCAR, MAR, MNAR)',
-        choices=['MCAR', 'MAR', 'MNAR', 'GAIN_MNAR'],
+        help='the modality of missing data (MCAR, MAR, MNAR, AI_upscaler)',
+        choices=['MCAR', 'MAR', 'MNAR', 'GAIN_MNAR','AI_upscaler'],
         default='MCAR',
         type=str)
     parser.add_argument(

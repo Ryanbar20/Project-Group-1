@@ -4,12 +4,12 @@
 """
 
 import numpy as np
-
-from utils.utils import binary_sampler, mar_sampler, gain_mnar_sampler
+from PIL import Image
+from utils.utils import binary_sampler, mar_sampler, gain_mnar_sampler, upscale
 from keras.datasets import mnist, fashion_mnist, cifar10
 
 
-def data_loader(dataset, miss_rate, miss_modality, seed=None):
+def data_loader(dataset, miss_rate, miss_modality,upscale_multiplier, seed=None):
     """Load a dataset and introduce missing elements.
 
     Todo: other miss modalities [MAR, MNAR, AI_upscaler, square]
@@ -38,20 +38,27 @@ def data_loader(dataset, miss_rate, miss_modality, seed=None):
     elif dataset == 'cifar10':
         (data_x, _), _ = cifar10.load_data()
         data_x = np.reshape(np.asarray(data_x), [50000, 32 * 32 * 3]).astype(float)
+    elif dataset == 'test':
+        data_x =  Image.open(f'datasets/{dataset}.jpg')
+        data_x = np.array(data_x)
+        data_x = data_x / 255
+        
     else:  # This should not happen
         print(f'Invalid dataset: "{dataset}". Exiting the program.')
         return None
 
     # Introduce missing elements in the data'
-    no, dim = data_x.shape
+    no, dim = data_x.shape[:2]
     match miss_modality:
         case 'MCAR':
             data_mask = binary_sampler(1 - miss_rate, no, dim, seed)
         case 'MAR':
             data_mask = mar_sampler(miss_rate, no, dim, data_x, seed)
-            
         case 'GAIN_MNAR':
             data_mask = gain_mnar_sampler(miss_rate,no,dim,data_x,seed)
+        case 'AI_UPSCALER':
+            miss_data_x, data_mask = upscale(data_x, upscale_multiplier)
+            return data_x, miss_data_x, data_mask
     miss_data_x = data_x.copy()
     miss_data_x[data_mask == 0] = np.nan
     return data_x, miss_data_x, data_mask
