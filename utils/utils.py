@@ -206,10 +206,14 @@ def mar_sampler(p, no, dim, x, seed=None):
 def gain_mnar_sampler(p, no, dim, x, seed=None):
     """ Sample MNAR distributed random variables
 
-    p = probability
-    N = number of examples
-    w = weights sampled U(0,1)
-    x = datapoints
+    This method generates a mask of binary data for the missing values,
+    the missingness here is calculated based on the formula for MNAR from the paper from Yoon et al.
+    here the missingess of a data point is dependent on its value
+
+    :param p = probability
+    :param N = number of examples
+    :param w = weights sampled U(0,1)
+    :param x = datapoints
     """
 
     if seed: np.random.seed(seed)
