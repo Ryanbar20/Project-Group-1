@@ -17,8 +17,8 @@
 Todo: run in separate thread
 
 (1) init_monitors: initialize the temporary folder
-(2) start_imputation_time_monitor: open the imputation time log file
-(3) start_rmse_monitor: open the RMSE log file
+(2) start_rmse_monitor: open the RMSE log file
+(3) start_imputation_time_monitor: open the imputation time log file
 (4) start_memory_usage_monitor: open the memory usage log file
 (5) start_energy_consumption_monitor: open the energy consumption log file
 (6) start_sparsity_monitor: open the sparsity log files
@@ -48,10 +48,10 @@ Todo: run in separate thread
 import json
 import struct
 
-from os import makedirs
+from os import makedirs, fsync
 from os.path import isdir
 from shutil import rmtree
-from time import time
+from time import perf_counter
 
 from utils.metrics import get_rmse
 
@@ -118,7 +118,7 @@ class Monitor:
         """
 
         self.f_imputation_time = open(f'{self.directory}/imputation_time.bin', 'ab')
-        self.imputation_time = time()
+        self.imputation_time = perf_counter()
 
         if self.verbose: print('Monitoring imputation time...')
         return True
@@ -228,7 +228,7 @@ class Monitor:
         - step_time: the time (in seconds) between the previous step and now
         """
 
-        current_time = time()
+        current_time = perf_counter()
         step_time = current_time - self.imputation_time
         self.f_imputation_time.write(struct.pack('f', step_time))
         self.imputation_time = current_time
@@ -335,88 +335,138 @@ class Monitor:
 
     # Stop monitors
     def stop_rmse_monitor(self):
-        """Close the RMSE log file and stop monitoring.
+        """Flush, sync and close the RMSE log file and stop monitoring.
 
         :return: False
         """
 
+        self.f_RMSE.flush()
+        fsync(self.f_RMSE.fileno())
         self.f_RMSE.close()
 
         if self.verbose: print('Stopped monitoring RMSE.')
         return False
 
     def stop_imputation_time_monitor(self):
-        """Close the imputation time log file and stop monitoring.
+        """Flush, sync and close the imputation time log file and stop monitoring.
 
         :return: False
         """
 
+        self.f_imputation_time.flush()
+        fsync(self.f_imputation_time.fileno())
         self.f_imputation_time.close()
 
         if self.verbose: print('Stopped monitoring imputation time.')
         return False
 
     def stop_memory_usage_monitor(self):
-        """Close the memory usage log file and stop monitoring.
+        """Flush, sync and close the memory usage log file and stop monitoring.
 
         :return: False
         """
 
+        self.f_memory_usage.flush()
+        fsync(self.f_memory_usage.fileno())
         self.f_memory_usage.close()
 
         # if self.verbose: print('Stopped monitoring memory usage.')
         return False
 
     def stop_energy_consumption_monitor(self):
-        """Close the energy consumption log file and stop monitoring.
+        """Flush, sync and close the energy consumption log file and stop monitoring.
 
         :return: False
         """
 
+        self.f_energy_consumption.flush()
+        fsync(self.f_energy_consumption.fileno())
         self.f_energy_consumption.close()
 
         # if self.verbose: print('Stopped monitoring energy consumption.')
         return False
 
     def stop_sparsity_monitor(self):
-        """Close the sparsity log files and stop monitoring.
+        """Flush, sync and close the sparsity log files and stop monitoring.
 
         :return: False
         """
 
+        # Generator
+        self.f_sparsity_G.flush()
+        fsync(self.f_sparsity_G.fileno())
         self.f_sparsity_G.close()
+
+        self.f_sparsity_G_W1.flush()
+        fsync(self.f_sparsity_G_W1.fileno())
         self.f_sparsity_G_W1.close()
+
+        self.f_sparsity_G_W2.flush()
+        fsync(self.f_sparsity_G_W2.fileno())
         self.f_sparsity_G_W2.close()
+
+        self.f_sparsity_G_W3.flush()
+        fsync(self.f_sparsity_G_W3.fileno())
         self.f_sparsity_G_W3.close()
 
+        # Discriminator
+        self.f_sparsity_D.flush()
+        fsync(self.f_sparsity_D.fileno())
         self.f_sparsity_D.close()
+
+        self.f_sparsity_D_W1.flush()
+        fsync(self.f_sparsity_D_W1.fileno())
         self.f_sparsity_D_W1.close()
+
+        self.f_sparsity_D_W2.flush()
+        fsync(self.f_sparsity_D_W2.fileno())
         self.f_sparsity_D_W2.close()
+
+        self.f_sparsity_D_W3.flush()
+        fsync(self.f_sparsity_D_W3.fileno())
         self.f_sparsity_D_W3.close()
 
         if self.verbose: print('Stopped monitoring sparsity.')
         return False
 
     def stop_flops_monitor(self):
-        """Close the FLOPs log files and stop monitoring.
+        """Flush, sync and close the FLOPs log files and stop monitoring.
 
         :return: False
         """
 
+        # Generator
+        self.f_FLOPs_G.flush()
+        fsync(self.f_FLOPs_G.fileno())
         self.f_FLOPs_G.close()
+
+        # Discriminator
+        self.f_FLOPs_D.flush()
+        fsync(self.f_FLOPs_D.fileno())
         self.f_FLOPs_D.close()
 
         # if self.verbose: print('Stopped monitoring FLOPs.')
         return False
 
     def stop_loss_monitor(self):
-        """Close the loss log files and stop monitoring.
+        """Flush, sync and close the loss log files and stop monitoring.
 
         :return: False
         """
 
+        # Generator (cross entropy)
+        self.f_loss_G.flush()
+        fsync(self.f_loss_G.fileno())
         self.f_loss_G.close()
+
+        # Discriminator (cross entropy)
+        self.f_loss_D.flush()
+        fsync(self.f_loss_D.fileno())
         self.f_loss_D.close()
+
+        # MSE
+        self.f_loss_MSE.flush()
+        fsync(self.f_loss_MSE.fileno())
         self.f_loss_MSE.close()
 
         if self.verbose: print('Stopped monitoring loss (cross entropy and MSE).')
@@ -434,6 +484,7 @@ class Monitor:
         self.stop_energy_consumption_monitor()
         self.stop_sparsity_monitor()
         self.stop_flops_monitor()
+        self.stop_loss_monitor()
 
         if self.verbose: print('Stopped monitors.')
         return False
@@ -473,6 +524,5 @@ class Monitor:
             }
         })
 
-        f_model = open(filepath, 'w')
-        f_model.write(model)
-        f_model.close()
+        with open(filepath, 'w') as f:
+            f.write(model)

@@ -126,8 +126,8 @@ def s_gain(miss_data_x, batch_size=128, hint_rate=0.9, alpha=100, iterations=100
     elif generator_modality == 'RSensitivity':
         return None
 
-    else:  # This should not happen.
-        print(f'Invalid generator modality "{generator_modality}". Exiting the program.')
+    else:  # This should not happen
+        print(f'Invalid generator modality: {generator_modality}. Exiting the program.')
         return None
 
     G_W1 = tf.Variable(G_W1)
@@ -175,8 +175,8 @@ def s_gain(miss_data_x, batch_size=128, hint_rate=0.9, alpha=100, iterations=100
     elif discriminator_modality == 'RSensitivity':
         return None
 
-    else:  # This should not happen.
-        print(f'Invalid discriminator modality "{discriminator_modality}". Exiting the program.')
+    else:  # This should not happen
+        print(f'Invalid discriminator modality: {discriminator_modality}. Exiting the program.')
         return None
 
     D_W1 = tf.Variable(D_W1)
@@ -271,6 +271,11 @@ def s_gain(miss_data_x, batch_size=128, hint_rate=0.9, alpha=100, iterations=100
                                                  feed_dict={X: X_mb, M: M_mb, H: H_mb})
 
         if monitor: monitor.log_loss(G_loss_curr, D_loss_curr, MSE_loss_curr)
+
+        # Terminate failed imputation immediately
+        if np.isnan(G_loss_curr):
+            if verbose: print('Imputation failed! Terminating...')
+            break
 
     if monitor:
         monitor.log_imputation_time()
