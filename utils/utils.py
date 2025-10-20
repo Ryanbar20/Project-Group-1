@@ -193,10 +193,12 @@ def mar_sampler(p, no, dim, x, seed=None):
             vec = wb_matrix[0] * mask[l] * x[l] + wb_matrix[1]*(1-mask[l])
             vectors.append(np.sum(vec[0:i]))
         vectors = np.array(vectors)
+        divisor = np.sum(np.exp(-vectors))
+
         for n in range(no):
-            divisor = np.sum(np.exp(-vectors))
             result = p * no * np.exp(-vectors[n]) / divisor
             mask[n][i] = 1 * (mask[n][i] < result)
+    mask = 1 - mask
     mask = 1 - mask
     print(mask[:5])
     return mask
@@ -219,12 +221,14 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
     mask = np.random.uniform(0., 1., size=(no,dim ))
 
     denominators = np.zeros(dim)
+    numerators = np.zeros(shape=(dim,no))
     for i in range(dim):
         for j in range(no):
-            denominators[i] += np.exp(-w_array[i] * x[j][i])
-    
+            exponent = np.exp(-w_array[i] * x[j][i])
+            denominators[i] += exponent
+            numerators[i][j] = exponent
+    numerators = p * no * numerators
     for i in range(dim):
         for j in range(no):
-            nominator = p * no * np.exp(-w_array[i] * x[j][i])
-            mask[j][i] = 1 * (mask[j][i] < (nominator/denominators[i]))
+            mask[j][i] = 1 * (mask[j][i] < (numerators[i][j]/denominators[i]))
     return 1 - mask

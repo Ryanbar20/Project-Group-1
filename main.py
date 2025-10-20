@@ -75,9 +75,9 @@ def main(args):
     folder = args.folder
     verbose = args.verbose
     no_log = args.no_log
-    no_graph = args.no_graphs
+    no_graph = args.no_graph
     no_model = args.no_model
-    no_save = args.no_imputation
+    no_save = args.no_save
     no_system_information = args.no_system_information
 
     # Standardization
@@ -103,7 +103,7 @@ def main(args):
     if seed is None: seed = np.random.randint(2 ** 31)
 
     # Exit program if a modality is not implemented yet Todo: implement the modalities
-    not_implemented = ['MAR', 'MNAR', 'ERK', 'erdos_renyi_kernel', 'ERKRW', 'erdos_renyi_kernel_random_weight', 'SNIP',
+    not_implemented = ['ERK', 'erdos_renyi_kernel', 'ERKRW', 'erdos_renyi_kernel_random_weight', 'SNIP',
                        'GraSP', 'RSensitivity']
     if miss_modality in not_implemented:
         print(f'Miss modality {miss_modality} is not implemented. Exiting program...')
