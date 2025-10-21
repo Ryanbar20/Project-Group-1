@@ -199,7 +199,6 @@ def mar_sampler(p, no, dim, x, seed=None):
             result = p * no * np.exp(-vectors[n]) / divisor
             mask[n][i] = 1 * (mask[n][i] < result)
     mask = 1 - mask
-    mask = 1 - mask
     print(mask[:5])
     return mask
 
@@ -239,7 +238,7 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
 
 
 
-def upscale(np_image, multiplier):
+def upscale(np_image, miss_rate, data_points_per_pixel):
     """ Upscale input image
     This method converts an image to a np-array with missing values,
     after which S-GAIN fills them in with imputed data.
@@ -248,21 +247,30 @@ def upscale(np_image, multiplier):
     :param multiplier           : the factor by which the image needs to be upscaled
     
     """
-    print(np_image.shape)
     
     
+    #generate mask
+    mask = np.ones(shape=np_image.shape)
+    miss_rate /= 2
+   
+    #get shape data
     rows, cols = np_image.shape[:2]
-    new_rows_step = int(rows /  (rows * (multiplier-1)))
-    new_cols_step = int(cols /  (cols * (multiplier-1)))
-    row_indices = np.arange(0, rows, new_rows_step)
-    col_indices = np.arange(0, cols, new_cols_step)
-    #insert nan rows
-    np_image = np.insert(np_image, row_indices, [np.nan, np.nan, np.nan], axis=0)
-    np_image = np.insert(np_image, col_indices, [np.nan, np.nan, np.nan], axis=1)
+    new_rows_step = int(rows /  (rows * miss_rate))
+    new_cols_step = int(cols /  (cols * miss_rate)) * data_points_per_pixel
+    row_indices = np.arange(rows-1, 0, -new_rows_step)
+    col_indices = np.arange(cols-1, 0, -new_cols_step)
     
     
-    mask = (~np.isnan(np_image)).astype(int)
-    return np_image, mask
+    #add zeros to the mask at correct location
+    # zero_rows = np.zeros(shape=(rows,1))
+    # zero_cols = np.zeros(shape=(data_points_per_pixel,cols))
+    for row in row_indices:
+        mask[row] = 0
     
+    for col in col_indices:
+        mask[:, col-data_points_per_pixel+1:col+1] = 0
+        
+    
+    return mask
     
 

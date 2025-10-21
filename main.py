@@ -63,7 +63,6 @@ def main(args):
     # Get the parameters
     dataset = args.dataset.lower()
     miss_rate = args.miss_rate
-    upscale_multiplier = args.upscale_multiplier
     miss_modality = args.miss_modality.upper()
     seed = args.seed
     batch_size = args.batch_size
@@ -127,7 +126,7 @@ def main(args):
         print('Loading data...')
 
     # Load the data with missing elements
-    data_x, miss_data_x, data_mask = data_loader(dataset, miss_rate, miss_modality, upscale_multiplier, seed)
+    data_x, miss_data_x, data_mask = data_loader(dataset, miss_rate, miss_modality, seed)
 
     # Initialize monitor
     monitor = None if no_log and no_model else Monitor(data_x, data_mask, experiment=experiment, verbose=verbose)
@@ -137,7 +136,7 @@ def main(args):
         miss_data_x, batch_size=batch_size, hint_rate=hint_rate, alpha=alpha, iterations=iterations,
         generator_sparsity=generator_sparsity, generator_modality=generator_modality,
         discriminator_sparsity=discriminator_sparsity, discriminator_modality=discriminator_modality,
-        verbose=verbose, no_model=no_model, monitor=None
+        verbose=verbose, no_model=no_model, monitor=monitor
     )
 
     # Calculate the RMSE
@@ -177,8 +176,15 @@ def main(args):
     # print(imputed_data_x[:5])
     # result = Image.fromarray((imputed_data_x * 255).astype(int))
     # result.show()
+    print(imputed_data_x[:2])
+    img = imputed_data_x.astype(int)
+    print(img[:2])
+    #picca = np.reshape(picca, (picca.shape[0], picca.shape[1] / 1, 1))
+    img = Image.fromarray(img)
+    img.show()
+    
 
-    return imputed_data_x #, rmse
+    return imputed_data_x, rmse
 
 
 if __name__ == '__main__':
@@ -194,12 +200,6 @@ if __name__ == '__main__':
         help='the probability of missing elements in the data',
         default=0.2,
         type=float)
-    parser.add_argument(
-        '-um', '--upscale_multiplier',
-        help= 'the multiplier for the upscaling size',
-        default= 1.1, 
-        type=float
-    )
     parser.add_argument(
         '-mm', '--miss_modality',
         help='the modality of missing data (MCAR, MAR, MNAR, AI_upscaler)',

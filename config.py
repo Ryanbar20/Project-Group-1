@@ -20,9 +20,9 @@
 # -- Settings ---------------------------------------------------------------------------------------------------------
 
 # Data preparation settings
-dataset = ['health', 'fashion_mnist']  # Options: ['spam', 'letter', 'health', 'mnist', 'fashion_mnist', 'cifar10']
-miss_rate = [0.2]
-miss_modality = ['MCAR']               # Options: ['MCAR', 'MAR', 'MNAR']
+dataset = ['health', 'spam', 'letter', 'fashion_mnist']  # Options: ['spam', 'letter', 'health', 'mnist', 'fashion_mnist', 'cifar10']
+miss_rate = [0.05, 0.1, 0.2]
+miss_modality = ['MCAR', 'MAR', 'GAIN_MNAR']               # Options: ['MCAR', 'MAR', 'MNAR']
 seed = [0]                             # Use None for random seed
 store_prepared_dataset = True          # Default: True
 
@@ -35,7 +35,7 @@ iterations = [10000]     # Default: [10000]
 
 # Generator settings
 generator_sparsity = [0, 0.6, 0.8, 0.9, 0.95, 0.99]
-generator_initialization = ['dense', 'random']       # Options: ['dense', 'random', 'ER', 'ERRW']
+generator_initialization = ['dense']       # Options: ['dense', 'random', 'ER', 'ERRW']
 generator_regrower = [None]  # Todo list options
 generator_regrow_rate = [None]
 generator_regrow_period = [None]
@@ -47,7 +47,7 @@ generator_use_strategy = [False]
 
 # Discriminator settings
 discriminator_sparsity = [0, 0.2, 0.4, 0.6, 0.8]
-discriminator_initialization = ['dense', 'random']    # Options: ['dense', 'random', 'ER', 'ERRW']
+discriminator_initialization = ['dense']    # Options: ['dense', 'random', 'ER', 'ERRW']
 discriminator_regrower = [None]  # Todo list options
 discriminator_regrow_rate = [None]
 discriminator_regrow_period = [None]
@@ -61,7 +61,7 @@ discriminator_use_strategy = [False]
 output_folder = 'output'  # Default: 'output'
 no_imputation = False     # Default: False
 no_log = False            # Default: False (also disables graphs)
-no_graphs = False         # Default: False
+no_graph = False         # Default: False
 no_model = False          # Default: False
 
 # Monitor settings
@@ -85,10 +85,10 @@ plot_energy_consumption = False  # Default: True
 # Run settings
 n_runs = 10
 ignore_existing_files = False    # Default: False
-retry_failed_experiments = True  # Default: True
+retry_failed_experiments = False  # Default: True
 loop_until_complete = True       # Default: True
 perform_analysis = True          # Default: True
-auto_shutdown = True             # Default: False
+auto_shutdown = False             # Default: False
 
 # Inclusions (modify the settings and run again)
 inclusions = [{

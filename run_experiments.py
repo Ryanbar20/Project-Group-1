@@ -54,7 +54,7 @@ def run_experiments():
     # Get the experiment (and log_and_graphs) commands
     experiment_commands = update_experiments()
     log_and_graphs_command = f'python log_and_graphs.py' \
-                             f'{" --no_graph" if no_graphs else ""}' \
+                             f'{" --no_graph" if no_graph else ""}' \
                              f'{" --no_system_information" if no_system_information else ""}' \
                              f'{" --verbose" if verbose else ""}'
 
@@ -99,3 +99,7 @@ def run_experiments():
     if auto_shutdown and total > 0:
         if verbose: print(f'Processes finished.\nShutting down...')
         subprocess.run(['shutdown', '-s'])
+start = perf_counter()
+run_experiments()
+end = perf_counter()
+print(f"Experiments took {end-start} seconds")
