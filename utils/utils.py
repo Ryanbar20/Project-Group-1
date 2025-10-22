@@ -287,14 +287,20 @@ def upscale(np_image, miss_rate, data_points_per_pixel):
     mask = np.ones(shape=np_image.shape)
     rows, cols = np_image.shape[:2]
 
-    remove_cols = int(1 / miss_rate)
+    remove_cols = int(1 / miss_rate) * data_points_per_pixel
 
     for i in range(rows):
         offset = i % remove_cols
-        remove_indices = np.arange(0, cols- offset, remove_cols)
+        remove_indices = np.arange(-data_points_per_pixel, cols- offset, remove_cols)
 
         for index in remove_indices:
-            mask[i][index+offset] = 0
+            mask[i][max(index+offset, 0): index+offset+data_points_per_pixel] = 0
 
     
     return mask
+
+
+img = np.ones(shape=(16,16))
+mask = upscale(img, 0.2, 3)
+print(1-np.mean(mask))
+print(mask)
