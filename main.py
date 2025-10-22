@@ -177,11 +177,9 @@ def main(args):
     # result = Image.fromarray((imputed_data_x * 255).astype(int))
     # result.show()
     # print(imputed_data_x[:2])
-    img = imputed_data_x.astype(int)
     # print(img[:2])
     #picca = np.reshape(picca, (picca.shape[0], picca.shape[1] / 1, 1))
-    img = Image.fromarray(img)
-    img = img.convert('L')
+    img = Image.fromarray(imputed_data_x.astype(np.uint8), mode='L')
     img.save(f"{folder}/{experiment}.jpg")
     
 
