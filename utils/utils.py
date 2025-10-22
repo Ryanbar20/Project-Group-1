@@ -238,7 +238,7 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
 
 
 
-def upscale(np_image, miss_rate, data_points_per_pixel):
+def upscale2(np_image, miss_rate, data_points_per_pixel):
     """ Upscale input image
     This method converts an image to a np-array with missing values,
     after which S-GAIN fills them in with imputed data.
@@ -282,3 +282,19 @@ def upscale(np_image, miss_rate, data_points_per_pixel):
     return mask
     
 
+#TODO: implment rgb/rgba, etc. handling
+def upscale(np_image, miss_rate, data_points_per_pixel):
+    mask = np.ones(shape=np_image.shape)
+    rows, cols = np_image.shape[:2]
+
+    remove_cols = int(1 / miss_rate)
+
+    for i in range(rows):
+        offset = i % remove_cols
+        remove_indices = np.arange(0, cols- offset, remove_cols)
+
+        for index in remove_indices:
+            mask[i][index+offset] = 0
+
+    
+    return mask
