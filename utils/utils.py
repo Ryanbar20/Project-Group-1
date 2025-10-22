@@ -257,20 +257,28 @@ def upscale(np_image, miss_rate, data_points_per_pixel):
     rows, cols = np_image.shape[:2]
     new_rows_step = int(rows /  (rows * miss_rate))
     new_cols_step = int(cols /  (cols * miss_rate)) * data_points_per_pixel
-    row_indices = np.arange(rows-1, 0, -new_rows_step)
-    col_indices = np.arange(cols-1, 0, -new_cols_step)
+    row_indices = np.arange(rows-1, 1, -new_rows_step)
+    col_indices = np.arange(cols-1, data_points_per_pixel, -new_cols_step)
     
     
     #add zeros to the mask at correct location
     # zero_rows = np.zeros(shape=(rows,1))
     # zero_cols = np.zeros(shape=(data_points_per_pixel,cols))
     for row in row_indices:
-        mask[row] = 0
+        for col in range(int(cols / data_points_per_pixel)):
+            if (col %2 == 0):
+                mask[row, col*data_points_per_pixel:col*data_points_per_pixel+1] = 0
+            else:
+                mask[row-1,col*data_points_per_pixel:col*data_points_per_pixel+1] = 0
     
     for col in col_indices:
-        mask[:, col-data_points_per_pixel+1:col+1] = 0
+        for row in range(rows):
+            if (row %2 == 0):
+                mask[row, col-data_points_per_pixel+1:col+1] = 0
+            else:
+                mask[row, col-2*data_points_per_pixel+1:col- data_points_per_pixel+1] = 0
         
-    
+    print(mask)
     return mask
     
 

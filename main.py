@@ -176,12 +176,13 @@ def main(args):
     # print(imputed_data_x[:5])
     # result = Image.fromarray((imputed_data_x * 255).astype(int))
     # result.show()
-    print(imputed_data_x[:2])
+    # print(imputed_data_x[:2])
     img = imputed_data_x.astype(int)
-    print(img[:2])
+    # print(img[:2])
     #picca = np.reshape(picca, (picca.shape[0], picca.shape[1] / 1, 1))
     img = Image.fromarray(img)
-    img.show()
+    img = img.convert('L')
+    img.save(f"{folder}/{experiment}.jpg")
     
 
     return imputed_data_x, rmse
