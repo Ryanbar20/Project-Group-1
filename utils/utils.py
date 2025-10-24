@@ -238,9 +238,9 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
 
 
 
-def upscale2(np_image, miss_rate, data_points_per_pixel):
+def upscale_zigzag(np_image, miss_rate, data_points_per_pixel):
     """ Upscale input image
-    This method converts an image to a np-array with missing values,
+    This method converts an image to a np-array with missing values in a zigzag manner,
     after which S-GAIN fills them in with imputed data.
 
     :param np_image             : the image that needs to be upscaled
@@ -284,6 +284,15 @@ def upscale2(np_image, miss_rate, data_points_per_pixel):
 
 #TODO: implment rgb/rgba, etc. handling
 def upscale(np_image, miss_rate, data_points_per_pixel):
+    """ Upscale input image
+    This method converts an image to a np-array with missing values.
+    after which S-GAIN fills them in with imputed data.
+    These missing values are filled in wiht diagonals.
+
+    :param np_image             : the image that needs to be upscaled
+    :param multiplier           : the factor by which the image needs to be upscaled
+    
+    """
     mask = np.ones(shape=np_image.shape)
     rows, cols = np_image.shape[:2]
 
@@ -296,11 +305,10 @@ def upscale(np_image, miss_rate, data_points_per_pixel):
         for index in remove_indices:
             mask[i][max(index+offset, 0): index+offset+data_points_per_pixel] = 0
 
-    
     return mask
 
 
-img = np.ones(shape=(16,16))
-mask = upscale(img, 0.2, 3)
-print(1-np.mean(mask))
-print(mask)
+# img = np.ones(shape=(16,16))
+# mask = upscale(img, 0.2, 3)
+# print(1-np.mean(mask))
+# print(mask)
