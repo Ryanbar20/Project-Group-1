@@ -37,25 +37,21 @@ iterations = [10000]     # Default: [10000]
 generator_sparsity = [0, 0.6, 0.8, 0.9, 0.95, 0.99]
 generator_initialization = ['dense']       # Options: ['dense', 'random', 'ER', 'ERRW']
 generator_regrower = [None]  # Todo list options
-generator_regrow_rate = [None]
-generator_regrow_period = [None]
-generator_pruner = [None]  # Todo list options
-generator_prune_rate = [None]
-generator_prune_period = [None]
-generator_enable_clipping = [False]
-generator_use_strategy = [False]
+generator_regrow_rate = [0]
+generator_regrow_period = [0]
+generator_enable_clipping = False
+generator_strategy = [None]
+generator_use_strategy = False
 
 # Discriminator settings
 discriminator_sparsity = [0, 0.2, 0.4, 0.6, 0.8]
 discriminator_initialization = ['dense']    # Options: ['dense', 'random', 'ER', 'ERRW']
 discriminator_regrower = [None]  # Todo list options
-discriminator_regrow_rate = [None]
-discriminator_regrow_period = [None]
-discriminator_pruner = [None]  # Todo list options
-discriminator_prune_rate = [None]
-discriminator_prune_period = [None]
-discriminator_enable_clipping = [False]
-discriminator_use_strategy = [False]
+discriminator_regrow_rate = [0]
+discriminator_regrow_period = [0]
+discriminator_enable_clipping = False
+discriminator_strategy = [None]
+discriminator_use_strategy = False
 
 # Output settings
 output_folder = 'output'  # Default: 'output'
@@ -73,8 +69,15 @@ enable_sparsity_monitor = True             # Default: True
 enable_FLOPs_monitor = False               # Default: False (takes significantly more time)
 enable_loss_monitor = True                 # Default: True
 
+# Run settings
+n_runs = 10                      # Default: 10
+retry_failed_experiments = True  # Default: True
+max_failed_experiments = 40      # Default: 40 (success_rate < 20%)
+ignore_existing_files = False    # Default: False
+
 # Analysis settings
 analysis_folder = 'analysis'     # Default: 'analysis'
+perform_analysis = True          # Default: True
 compile_metrics = True           # Default: True
 plot_rmse = True                 # Default: True
 plot_success_rate = True         # Default: True
@@ -95,7 +98,7 @@ inclusions = [{
     'n_runs': 1,
     'enable_FLOPs_monitor': True,
     'output_folder': 'output_FLOPs',
-    'analysis_folder': 'analysis_FLOPs'
+    'perform_analysis': False
 }]
 
 # Exclusions (overwrites inclusions)
@@ -104,3 +107,4 @@ exclusions = []
 # Options
 verbose = True                 # Default: True
 no_system_information = False  # Default: False
+auto_shutdown = False          # Default: False

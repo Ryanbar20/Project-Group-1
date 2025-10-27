@@ -1,6 +1,7 @@
 .idea/
 .venv/
 __pycache__/
-analysis/
+analysis*/
+datasets/prepared/
 output*/
 temp/
