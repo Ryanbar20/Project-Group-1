@@ -76,9 +76,9 @@ def main(args):
     folder = args.folder
     verbose = args.verbose
     no_log = args.no_log
-    no_graph = args.no_graph
+    no_graph = args.no_graphs
     no_model = args.no_model
-    no_save = args.no_save
+    no_save = False #args.no_save
     no_system_information = args.no_system_information
 
     # Standardization
@@ -162,7 +162,7 @@ def main(args):
     # Save (trained) model
     if not no_model and 'nan' not in filepath_model:
         if verbose: print('Saving (trained) model...')
-        monitor.save_model(filepath_model)
+        #monitor.save_model(filepath_model)
 
     # Run log_and_graphs.py
     if not no_log: os.system(
@@ -180,7 +180,7 @@ def main(args):
     # print(img[:2])
     #picca = np.reshape(picca, (picca.shape[0], picca.shape[1] / 1, 1))
     img = Image.fromarray(imputed_data_x.astype(np.uint8), mode='L')
-    img.save(f"{folder}/{experiment}.jpg")
+    img.save(f"{folder}/{experiment}.png")
     
 
     return imputed_data_x, rmse

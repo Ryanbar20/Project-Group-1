@@ -43,6 +43,7 @@ def data_loader(dataset, miss_rate, miss_modality, seed=None):
         data_x =  Image.open(f'datasets/{dataset}.jpg')
         data_x = data_x.convert('L')
         data_x = np.array(data_x).astype(float)
+        print(data_x[:5])
         if (len(data_x.shape) == 3):
             data_points_per_pixel = data_x.shape[2]
             data_x = data_x.reshape((data_x.shape[0], data_x.shape[1] * data_x.shape[2]))
@@ -64,6 +65,7 @@ def data_loader(dataset, miss_rate, miss_modality, seed=None):
             data_mask = gain_mnar_sampler(miss_rate,no,dim,data_x,seed)
         case 'AI_UPSCALER':
             data_mask = upscale(data_x, miss_rate, data_points_per_pixel)
+    print(data_mask[:5])
     miss_data_x = data_x.copy()
     miss_data_x[data_mask == 0] = np.nan
     return data_x, miss_data_x, data_mask
