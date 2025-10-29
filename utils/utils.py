@@ -231,19 +231,11 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
     #init mask array
     mask = np.random.uniform(0., 1., size=(no,dim ))
 
-    denominators = np.zeros(dim)
-    numerators = np.zeros(shape=(dim,no))
-    for i in range(dim):
-        for j in range(no):
-            exponent = np.exp(-w_array[i] * x[j][i])
-            denominators[i] += exponent
-            numerators[i][j] = exponent
+    numerators = np.exp(-w_array[:,None] * x.T)
+    denominators = np.sum(numerators, axis=1)
     numerators = p * no * numerators
-    for i in range(dim):
-        for j in range(no):
-            mask[j][i] = 1 * (mask[j][i] < (numerators[i][j]/denominators[i]))
-    return 1 - mask
-
+    mask=   1 * (mask >= (numerators.T / denominators))
+    return mask
 
 
 def upscale_zigzag(np_image, miss_rate, data_points_per_pixel):
