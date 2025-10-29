@@ -20,8 +20,8 @@
 # -- Settings ---------------------------------------------------------------------------------------------------------
 
 # Data preparation settings
-dataset = ['health', 'spam', 'letter', 'fashion_mnist']  # Options: ['spam', 'letter', 'health', 'mnist', 'fashion_mnist', 'cifar10']
-miss_rate = [0.05, 0.1, 0.2]
+dataset = ['health', 'spam', 'letter']  # Options: ['spam', 'letter', 'health', 'mnist', 'fashion_mnist', 'cifar10']
+miss_rate = [0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75]
 miss_modality = ['MCAR', 'MAR', 'GAIN_MNAR']               # Options: ['MCAR', 'MAR', 'MNAR']
 seed = [0]                             # Use None for random seed
 store_prepared_dataset = True          # Default: True
@@ -31,34 +31,38 @@ version = ['TFv1_FP32']  # Options: ['TFv1_FP32', 'TFv1_INT8']
 batch_size = [128]       # Default: [128]
 hint_rate = [0.9]        # Default: [0.9]
 alpha = [100]            # Default: [100]
-iterations = [10000]     # Default: [10000]
+iterations = [5000]     # Default: [10000]
 
 # Generator settings
-generator_sparsity = [0, 0.6, 0.8, 0.9, 0.95, 0.99]
+generator_sparsity = [0, 0.6, 0.8, 0.9]
 generator_initialization = ['dense']       # Options: ['dense', 'random', 'ER', 'ERRW']
 generator_regrower = [None]  # Todo list options
-generator_regrow_rate = [0]
-generator_regrow_period = [0]
-generator_enable_clipping = False
-generator_strategy = [None]
-generator_use_strategy = False
+generator_regrow_rate = [None]
+generator_regrow_period = [None]
+generator_pruner = [None]  # Todo list options
+generator_prune_rate = [None]
+generator_prune_period = [None]
+generator_enable_clipping = [False]
+generator_use_strategy = [False]
 
 # Discriminator settings
 discriminator_sparsity = [0, 0.2, 0.4, 0.6, 0.8]
 discriminator_initialization = ['dense']    # Options: ['dense', 'random', 'ER', 'ERRW']
 discriminator_regrower = [None]  # Todo list options
-discriminator_regrow_rate = [0]
-discriminator_regrow_period = [0]
-discriminator_enable_clipping = False
-discriminator_strategy = [None]
-discriminator_use_strategy = False
+discriminator_regrow_rate = [None]
+discriminator_regrow_period = [None]
+discriminator_pruner = [None]  # Todo list options
+discriminator_prune_rate = [None]
+discriminator_prune_period = [None]
+discriminator_enable_clipping = [False]
+discriminator_use_strategy = [False]
 
 # Output settings
 output_folder = 'output'  # Default: 'output'
 no_imputation = False     # Default: False
 no_log = False            # Default: False (also disables graphs)
 no_graph = False         # Default: False
-no_model = False          # Default: False
+no_model = True          # Default: False
 
 # Monitor settings
 enable_rmse_monitor = True                 # Default: True
@@ -69,15 +73,8 @@ enable_sparsity_monitor = True             # Default: True
 enable_FLOPs_monitor = False               # Default: False (takes significantly more time)
 enable_loss_monitor = True                 # Default: True
 
-# Run settings
-n_runs = 10                      # Default: 10
-retry_failed_experiments = True  # Default: True
-max_failed_experiments = 40      # Default: 40 (success_rate < 20%)
-ignore_existing_files = False    # Default: False
-
 # Analysis settings
 analysis_folder = 'analysis'     # Default: 'analysis'
-perform_analysis = True          # Default: True
 compile_metrics = True           # Default: True
 plot_rmse = True                 # Default: True
 plot_success_rate = True         # Default: True
@@ -98,7 +95,7 @@ inclusions = [{
     'n_runs': 1,
     'enable_FLOPs_monitor': True,
     'output_folder': 'output_FLOPs',
-    'perform_analysis': False
+    'analysis_folder': 'analysis_FLOPs'
 }]
 
 # Exclusions (overwrites inclusions)
@@ -107,4 +104,3 @@ exclusions = []
 # Options
 verbose = True                 # Default: True
 no_system_information = False  # Default: False
-auto_shutdown = False          # Default: False

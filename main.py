@@ -162,7 +162,7 @@ def main(args):
     # Save (trained) model
     if not no_model and 'nan' not in filepath_model:
         if verbose: print('Saving (trained) model...')
-        #monitor.save_model(filepath_model)
+        monitor.save_model(filepath_model)
 
     # Run log_and_graphs.py
     if not no_log: os.system(
@@ -179,8 +179,8 @@ def main(args):
     # print(imputed_data_x[:2])
     # print(img[:2])
     #picca = np.reshape(picca, (picca.shape[0], picca.shape[1] / 1, 1))
-    img = Image.fromarray(imputed_data_x.astype(np.uint8), mode='L')
-    img.save(f"{folder}/{experiment}.png")
+    # img = Image.fromarray(imputed_data_x.astype(np.uint8), mode='L')
+    # img.save(f"{folder}/{experiment}.png")
     
 
     return imputed_data_x, rmse

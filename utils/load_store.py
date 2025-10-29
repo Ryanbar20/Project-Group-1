@@ -149,6 +149,8 @@ def parse_experiment(experiment, file=False):
     discriminator_sparsity = float(discriminator_sparsity)
 
     if file:  # rmse, index, filetype
+        # print(rest)
+        # print(experiment)
         discriminator_modality, rest = rest.split('_RMSE_')
 
         rests = rest.split('_', 1)
@@ -193,7 +195,7 @@ def parse_files(files=None, filepath='output', filetype=None):
     :return:
     - df_files: a Pandas DataFrame with all the experiments
     """
-
+    
     files = [parse_experiment(file, file=True) for file in files] if files \
         else [parse_experiment(file, file=True) for file in listdir(filepath)] if isdir(filepath) \
         else []
@@ -359,6 +361,7 @@ def get_experiments(datasets, miss_rates, miss_modalities, seeds, batch_sizes, h
         for generator_sparsity, generator_modality in generator_sparsity_modality
         for discriminator_sparsity, discriminator_modality in discriminator_sparsity_modality
     })
+
 
     # Add inclusions
     if include is not None: experiments.update({
