@@ -21,8 +21,8 @@
 
 # Data preparation settings
 dataset = ['health', 'spam', 'letter']  # Options: ['spam', 'letter', 'health', 'mnist', 'fashion_mnist', 'cifar10']
-miss_rate = [0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75]
-miss_modality = ['MCAR', 'MAR', 'GAIN_MNAR']               # Options: ['MCAR', 'MAR', 'MNAR']
+miss_rate = [0.2] #[0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75]
+miss_modality = ['MCAR', 'MAR', 'MNAR']               # Options: ['MCAR', 'MAR', 'MNAR']
 seed = [0]                             # Use None for random seed
 store_prepared_dataset = True          # Default: True
 
@@ -35,7 +35,7 @@ iterations = [5000]     # Default: [10000]
 
 # Generator settings
 generator_sparsity = [0, 0.6, 0.8, 0.9]
-generator_initialization = ['dense']       # Options: ['dense', 'random', 'ER', 'ERRW']
+generator_initialization = ['ERRW']       # Options: ['dense', 'random', 'ER', 'ERRW']
 generator_regrower = [None]  # Todo list options
 generator_regrow_rate = [None]
 generator_regrow_period = [None]
@@ -47,7 +47,7 @@ generator_use_strategy = [False]
 
 # Discriminator settings
 discriminator_sparsity = [0, 0.2, 0.4, 0.6, 0.8]
-discriminator_initialization = ['dense']    # Options: ['dense', 'random', 'ER', 'ERRW']
+discriminator_initialization = ['ERRW']    # Options: ['dense', 'random', 'ER', 'ERRW']
 discriminator_regrower = [None]  # Todo list options
 discriminator_regrow_rate = [None]
 discriminator_regrow_period = [None]

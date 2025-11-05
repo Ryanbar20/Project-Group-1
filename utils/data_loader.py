@@ -5,7 +5,7 @@
 
 import numpy as np
 from PIL import Image
-from utils.utils import binary_sampler, mar_sampler, gain_mnar_sampler, upscale
+from utils.utils import binary_sampler, mar_sampler, mnar_sampler, upscale
 from keras.datasets import mnist, fashion_mnist, cifar10
 
 
@@ -61,8 +61,8 @@ def data_loader(dataset, miss_rate, miss_modality, seed=None):
             data_mask = binary_sampler(1 - miss_rate, no, dim, seed)
         case 'MAR':
             data_mask = mar_sampler(miss_rate, no, dim, data_x, seed)
-        case 'GAIN_MNAR':
-            data_mask = gain_mnar_sampler(miss_rate,no,dim,data_x,seed)
+        case 'MNAR':
+            data_mask = mnar_sampler(miss_rate,no,dim,data_x,seed)
         case 'AI_UPSCALER':
             data_mask = upscale(data_x, miss_rate, data_points_per_pixel)
     print(data_mask[:5])

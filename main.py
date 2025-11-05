@@ -202,7 +202,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-mm', '--miss_modality',
         help='the modality of missing data (MCAR, MAR, MNAR, AI_upscaler)',
-        choices=['MCAR', 'MAR', 'MNAR', 'GAIN_MNAR','AI_upscaler'],
+        choices=['MCAR', 'MAR', 'MNAR','AI_upscaler'],
         default='MCAR',
         type=str)
     parser.add_argument(

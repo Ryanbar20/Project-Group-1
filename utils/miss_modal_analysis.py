@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-def main():
+def dense_analysis():
     
     try:
         data = pd.read_csv("analysis/metrics.csv")
@@ -23,6 +23,7 @@ def main():
         for modality in modalities:
             modality_set = dataset[dataset['miss_modality'] == modality]
             
+            print(miss_rates, modality_set['rmse_mean'])
             a[i].plot(miss_rates, modality_set['rmse_mean'], label=modality)
                 
         a[i].set_title(name)
@@ -71,5 +72,39 @@ def main():
     fig2.legend()
 
     plt.savefig("Success_rates.pdf", format='pdf', dpi=1200)
-        
-main()
+
+
+def ERRW_analysis():
+    try:
+        data = pd.read_csv("analysis/metrics.csv")
+    except(FileNotFoundError):
+        print("the metrics file could not be found at 'analysis/metrics.csv'.")
+        return
+    
+    names = data["dataset"].unique()
+    modalities = data["miss_modality"].unique()
+    experiments = data[['miss_modality', 'generator_sparsity', 'discriminator_sparsity']].drop_duplicates()
+    
+    fig , a = plt.subplots(1,len(names) * len(modalities), figsize=(20, 4))   # #rows # cols
+    index = -1
+    for name in names:
+        for modality in modalities:
+            dataset = data[(data['dataset'] == name) & (data['miss_modality'] == modality)][['dataset','miss_modality', 'generator_sparsity', 'discriminator_sparsity', 'rmse_mean']]
+            index += 1
+            for gen_sparsity in dataset['generator_sparsity'].unique():
+                x_y = dataset[dataset['generator_sparsity'] == gen_sparsity][['discriminator_sparsity', 'rmse_mean']]
+                
+                a[index].plot(x_y['discriminator_sparsity'], x_y['rmse_mean'])
+                a[index].set_title(f"{name}_{modality}")
+                if index == 0:
+                    a[index].set_ylabel("rmse_mean")
+                a[index].set_ylim(0,data['rmse_mean'].max() + 0.05)
+    fig.suptitle("Mean RMSE for each discriminator sparsity per generator sparsity")
+    fig.supxlabel("discriminator sparsity")
+    # fig.subplots_adjust(left=0.071, bottom=0.11, right=0.9, top=0.848, wspace=0.329, hspace=0.24) # spacing used for graphs in report
+    fig.legend(a[0].get_lines(), dataset['generator_sparsity'].unique(), loc="center right", ncol=1,title="generator_sparsity")
+    plt.savefig("ERRW_Sparsities.pdf", format="pdf", dpi=1200)
+
+
+# dense_analysis()
+ERRW_analysis()

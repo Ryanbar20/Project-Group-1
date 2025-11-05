@@ -192,7 +192,7 @@ def mar_sampler(p, no, dim, x, seed=None):
     #init mask array
     mask = np.random.uniform(0., 1., size=(no,dim ))
 
-    #set average missing rate of i-th feature equal for all the features
+    
     
     for i in range(dim):
         vectors = []
@@ -210,17 +210,17 @@ def mar_sampler(p, no, dim, x, seed=None):
     print(mask[:5])
     return mask
 
-def gain_mnar_sampler(p, no, dim, x, seed=None):
+def mnar_sampler(p, no, dim, x, seed=None):
     """ Sample MNAR distributed random variables
 
-    This method generates a mask of binary data for the missing values,
-    the missingness here is calculated based on the formula for MNAR from the paper from Yoon et al.
-    here the missingess of a data point is dependent on its value
+        This method generates a mask of binary data for the missing values,
+        the missingness here is calculated based on the formula for MNAR from the paper from Yoon et al.
+        here the missingess of a data point is dependent on its value
 
-    :param p = probability
-    :param N = number of examples
-    :param w = weights sampled U(0,1)
-    :param x = datapoints
+        :param p = probability
+        :param N = number of examples
+        :param w = weights sampled U(0,1)
+        :param x = datapoints
     """
 
     if seed: np.random.seed(seed)
@@ -231,56 +231,13 @@ def gain_mnar_sampler(p, no, dim, x, seed=None):
     #init mask array
     mask = np.random.uniform(0., 1., size=(no,dim ))
 
+
     numerators = np.exp(-w_array[:,None] * x.T)
     denominators = np.sum(numerators, axis=1)
     numerators = p * no * numerators
     mask=   1 * (mask >= (numerators.T / denominators))
     return mask
 
-
-def upscale_zigzag(np_image, miss_rate, data_points_per_pixel):
-    """ Upscale input image
-    This method converts an image to a np-array with missing values in a zigzag manner,
-    after which S-GAIN fills them in with imputed data.
-
-    :param np_image             : the image that needs to be upscaled
-    :param multiplier           : the factor by which the image needs to be upscaled
-    
-    """
-    
-    
-    #generate mask
-    mask = np.ones(shape=np_image.shape)
-    miss_rate /= 2
-   
-    #get shape data
-    rows, cols = np_image.shape[:2]
-    new_rows_step = int(rows /  (rows * miss_rate))
-    new_cols_step = int(cols /  (cols * miss_rate)) * data_points_per_pixel
-    row_indices = np.arange(rows-1, 1, -new_rows_step)
-    col_indices = np.arange(cols-1, data_points_per_pixel, -new_cols_step)
-    
-    
-    #add zeros to the mask at correct location
-    # zero_rows = np.zeros(shape=(rows,1))
-    # zero_cols = np.zeros(shape=(data_points_per_pixel,cols))
-    for row in row_indices:
-        for col in range(int(cols / data_points_per_pixel)):
-            if (col %2 == 0):
-                mask[row, col*data_points_per_pixel:col*data_points_per_pixel+1] = 0
-            else:
-                mask[row-1,col*data_points_per_pixel:col*data_points_per_pixel+1] = 0
-    
-    for col in col_indices:
-        for row in range(rows):
-            if (row %2 == 0):
-                mask[row, col-data_points_per_pixel+1:col+1] = 0
-            else:
-                mask[row, col-2*data_points_per_pixel+1:col- data_points_per_pixel+1] = 0
-        
-    print(mask)
-    return mask
-    
 
 #TODO: implment rgb/rgba, etc. handling
 def upscale(np_image, miss_rate, data_points_per_pixel):
@@ -296,6 +253,7 @@ def upscale(np_image, miss_rate, data_points_per_pixel):
     mask = np.ones(shape=np_image.shape)
     rows, cols = np_image.shape[:2]
 
+    # evenly remove diagonals starting at evenly spaced column offsets
     remove_cols = int(1 / miss_rate) * data_points_per_pixel
 
     for i in range(rows):
